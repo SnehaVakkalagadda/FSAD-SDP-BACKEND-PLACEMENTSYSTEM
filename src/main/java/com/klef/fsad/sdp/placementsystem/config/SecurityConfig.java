@@ -102,7 +102,7 @@ public class SecurityConfig
     {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of("https://placementmanagementsystem2007.netlify.app/4")); // frontend url
+        config.setAllowedOrigins(List.of("https://placementmanagementsystem2007.netlify.app")); // frontend url
         
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
