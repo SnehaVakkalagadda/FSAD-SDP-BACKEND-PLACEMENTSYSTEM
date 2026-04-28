@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.klef.fsad.sdp.placementsystem.dto.ApplicationViewDTO;
 import com.klef.fsad.sdp.placementsystem.entity.Application;
 import com.klef.fsad.sdp.placementsystem.entity.Job;
 import com.klef.fsad.sdp.placementsystem.repository.JobRepository;
@@ -40,21 +41,29 @@ public class PlacementOfficerController {
 //		} 
 //    }
 
-    @GetMapping("/applications")
-    public ResponseEntity<?> getAllApplications()
-    {
-    	try {
-    		List<Application> list = officerService.getAllApplications();
-    		if(list.isEmpty())
-    		{
-    			return ResponseEntity.status(404).body("Applications Not Found");
-    		}
-    		return ResponseEntity.status(200).body(list);
-    	}
-    	catch (Exception e) {
-    		return ResponseEntity.status(500).body("Internal Server Error");
-    	}
-    }
+//    @GetMapping("/applications")
+//    public ResponseEntity<?> getAllApplications()
+//    {
+//    	try {
+//    		List<Application> list = officerService.getAllApplications();
+//    		if(list.isEmpty())
+//    		{
+//    			return ResponseEntity.status(404).body("Applications Not Found");
+//    		}
+//    		return ResponseEntity.status(200).body(list);
+//    	}
+//    	catch (Exception e) {
+//    		return ResponseEntity.status(500).body("Internal Server Error");
+//    	}
+//    }
+	
+	@GetMapping("/viewapplications")
+	public ResponseEntity<?> getAll()
+	{
+	    List<ApplicationViewDTO> list = officerService.getAllApplications();
+
+	    return ResponseEntity.ok(list);
+	}
 
     @PutMapping("/updatestatus")
     public ResponseEntity<String> updateStatus(@RequestParam int applicationId, @RequestParam String status)

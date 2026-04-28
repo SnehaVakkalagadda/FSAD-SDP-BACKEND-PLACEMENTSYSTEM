@@ -19,8 +19,8 @@ public class Student {
 	    private String password;
 	    @Column(length=50,nullable=false)
 	    private String branch;
-//	    @Column(nullable=false)
-//	    private String resume;
+	    @Column(nullable=false)
+	    private String resume;
 	    @Column(nullable=false)
 	    private float cgpa;
 	    @Column(nullable=false)
@@ -68,12 +68,12 @@ public class Student {
 		public void setBranch(String branch) {
 			this.branch = branch;
 		}
-//		public String getResume() {
-//			return resume;
-//		}
-//		public void setResume(String resume) {
-//			this.resume = resume;
-//		}
+		public String getResume() {
+			return resume;
+		}
+		public void setResume(String resume) {
+			this.resume = resume;
+		}
 		public float getCgpa() {
 			return cgpa;
 		}

@@ -34,6 +34,8 @@ public class SecurityConfig
 
     @Autowired
     private UserService userService;
+    
+    
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception 
@@ -43,6 +45,11 @@ public class SecurityConfig
             .csrf(csrf -> csrf.disable())
             .authenticationProvider(authenticationProvider())
             .authorizeHttpRequests(auth -> auth
+            		
+            		.requestMatchers(org.springframework.http.HttpMethod.GET,
+            	            "/student/download-resume/**"
+            	    ).permitAll()
+            		
                 .requestMatchers(
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
@@ -55,7 +62,7 @@ public class SecurityConfig
 
                
                 .requestMatchers("/admin/**").hasAuthority("ADMIN")
-                .requestMatchers("/student/**").hasAuthority("STUDENT")
+                .requestMatchers("/student/update", "/student/viewjobs", "/student/applyjob/**", "/student/viewapplications/**").hasAuthority("STUDENT")
                 .requestMatchers("/employer/**").hasAuthority("EMPLOYER")
                 .requestMatchers("/officer/**").hasAuthority("PLACEMENT OFFICER")
 
@@ -95,7 +102,7 @@ public class SecurityConfig
     {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of("http://localhost:5173/")); // frontend url
+        config.setAllowedOrigins(List.of("*")); // frontend url
         
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.klef.fsad.sdp.placementsystem.dto.ApplicationViewDTO;
 import com.klef.fsad.sdp.placementsystem.dto.JobDTO;
 import com.klef.fsad.sdp.placementsystem.entity.Application;
 import com.klef.fsad.sdp.placementsystem.entity.Employer;
@@ -98,19 +99,27 @@ public class EmployerController {
     	}
     }
 
-    @GetMapping("/applicationsperjob/{jobId}")
-    public ResponseEntity<?> viewApps(@PathVariable int jobId)
+//    @GetMapping("/applicationsperjob/{jobId}")
+//    public ResponseEntity<?> viewApps(@PathVariable int jobId)
+//    {
+//    	try {
+//    		List<Application> list = employerService.viewApplicationsByJob(jobId);
+//    		if(list.isEmpty())
+//    		{
+//    			return ResponseEntity.status(404).body("No Applications Found");
+//    		}
+//    		return ResponseEntity.status(200).body(list);
+//    	}
+//    	catch (Exception e) {
+//			return ResponseEntity.status(500).body("Internal Server Error");
+//		}
+//    }
+    
+    @GetMapping("/viewapplications/{jobId}")
+    public ResponseEntity<?> viewApplications(@PathVariable int jobId)
     {
-    	try {
-    		List<Application> list = employerService.viewApplicationsByJob(jobId);
-    		if(list.isEmpty())
-    		{
-    			return ResponseEntity.status(404).body("No Applications Found");
-    		}
-    		return ResponseEntity.status(200).body(list);
-    	}
-    	catch (Exception e) {
-			return ResponseEntity.status(500).body("Internal Server Error");
-		}
+        List<ApplicationViewDTO> list = employerService.viewApplicationsByJob(jobId);
+
+        return ResponseEntity.ok(list);
     }
 }

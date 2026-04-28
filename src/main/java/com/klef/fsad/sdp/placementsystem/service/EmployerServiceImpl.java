@@ -1,5 +1,6 @@
 package com.klef.fsad.sdp.placementsystem.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,13 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.klef.fsad.sdp.placementsystem.dto.ApplicationViewDTO;
 import com.klef.fsad.sdp.placementsystem.dto.JobDTO;
 import com.klef.fsad.sdp.placementsystem.entity.Application;
 import com.klef.fsad.sdp.placementsystem.entity.Employer;
 import com.klef.fsad.sdp.placementsystem.entity.Job;
+import com.klef.fsad.sdp.placementsystem.entity.Student;
 import com.klef.fsad.sdp.placementsystem.repository.ApplicationRepository;
 import com.klef.fsad.sdp.placementsystem.repository.EmployerRepository;
 import com.klef.fsad.sdp.placementsystem.repository.JobRepository;
+import com.klef.fsad.sdp.placementsystem.repository.StudentRepository;
 
 @Service
 public class EmployerServiceImpl implements EmployerService {
@@ -25,6 +29,8 @@ public class EmployerServiceImpl implements EmployerService {
     private ApplicationRepository applicationRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private StudentRepository studentRepository;
     
     public Employer verifyEmployerLogin(String email, String pwd) 
     {
@@ -92,9 +98,43 @@ public class EmployerServiceImpl implements EmployerService {
         return jobRepository.findByEmployerId(employerId);
     }
 
+//    @Override
+//    public List<Application> viewApplicationsByJob(int jobId) 
+//    {
+//        return applicationRepository.findByJobId(jobId);
+//    }
+    
     @Override
-    public List<Application> viewApplicationsByJob(int jobId) 
+    public List<ApplicationViewDTO> viewApplicationsByJob(int jobId)
     {
-        return applicationRepository.findByJobId(jobId);
+        List<Application> applications = applicationRepository.findByJobId(jobId);
+
+        List<ApplicationViewDTO> dtoList = new ArrayList<>();
+
+        for(Application app : applications)
+        {
+            Optional<Student> sOpt = studentRepository.findById(app.getStudentId());
+
+            if(sOpt.isPresent())
+            {
+                Student s = sOpt.get();
+
+                ApplicationViewDTO dto = new ApplicationViewDTO();
+
+                dto.setApplicationId(app.getId());
+                dto.setStudentName(s.getName());
+                dto.setEmail(s.getEmail());
+                dto.setBranch(s.getBranch());
+                dto.setYear(s.getYear());
+                dto.setStatus(app.getStatus());
+
+                //  IMPORTANT
+                dto.setResumeUrl("http://localhost:2007/student/download-resume/" + s.getId());
+
+                dtoList.add(dto);
+            }
+        }
+
+        return dtoList;
     }
 }

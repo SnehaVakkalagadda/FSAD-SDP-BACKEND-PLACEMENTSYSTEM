@@ -2,6 +2,7 @@ package com.klef.fsad.sdp.placementsystem.service;
 
 import java.util.List;
 
+import com.klef.fsad.sdp.placementsystem.dto.ApplicationViewDTO;
 import com.klef.fsad.sdp.placementsystem.dto.JobDTO;
 import com.klef.fsad.sdp.placementsystem.entity.Application;
 import com.klef.fsad.sdp.placementsystem.entity.Employer;
@@ -13,5 +14,6 @@ public interface EmployerService {
 	    public String updateEmployerProfile(Employer employer);
 	    public String postJob(JobDTO dto);
 	    public List<Job> viewJobsByEmployer(int employerId);
-	    public List<Application> viewApplicationsByJob(int jobId);
+	    //public List<Application> viewApplicationsByJob(int jobId);
+	    public List<ApplicationViewDTO> viewApplicationsByJob(int jobId);
 }

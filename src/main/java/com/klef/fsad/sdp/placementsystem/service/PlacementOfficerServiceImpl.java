@@ -1,11 +1,13 @@
 package com.klef.fsad.sdp.placementsystem.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.klef.fsad.sdp.placementsystem.dto.ApplicationViewDTO;
 import com.klef.fsad.sdp.placementsystem.entity.Application;
 import com.klef.fsad.sdp.placementsystem.entity.PlacementOfficer;
 import com.klef.fsad.sdp.placementsystem.entity.Student;
@@ -39,10 +41,43 @@ public class PlacementOfficerServiceImpl implements PlacementOfficerService {
         return officerRepository.findByEmailAndPassword(email, pwd);
     }
 
+//    @Override
+//    public List<Application> getAllApplications() 
+//    {
+//        return applicationRepository.findAll();
+//    }
+    
     @Override
-    public List<Application> getAllApplications() 
+    public List<ApplicationViewDTO> getAllApplications()
     {
-        return applicationRepository.findAll();
+        List<Application> applications = applicationRepository.findAll();
+
+        List<ApplicationViewDTO> dtoList = new ArrayList<>();
+
+        for(Application app : applications)
+        {
+            Optional<Student> sOpt = studentRepository.findById(app.getStudentId());
+
+            if(sOpt.isPresent())
+            {
+                Student s = sOpt.get();
+
+                ApplicationViewDTO dto = new ApplicationViewDTO();
+
+                dto.setApplicationId(app.getId());
+                dto.setStudentName(s.getName());
+                dto.setEmail(s.getEmail());
+                dto.setBranch(s.getBranch());
+                dto.setYear(s.getYear());
+                dto.setStatus(app.getStatus());
+
+                dto.setResumeUrl("http://localhost:2007/student/download-resume/" + s.getId());
+
+                dtoList.add(dto);
+            }
+        }
+
+        return dtoList;
     }
 
 //    @Override
@@ -82,7 +117,7 @@ public class PlacementOfficerServiceImpl implements PlacementOfficerService {
 
     	    String email = student.getEmail();
 
-    	    // 🔹 Get job details
+    	    //  Get job details
     	    Optional<Job> jOpt = jobRepository.findById(app.getJobId());
 
     	    String jobTitle = "";
@@ -104,7 +139,7 @@ public class PlacementOfficerServiceImpl implements PlacementOfficerService {
 
     	    String text = "";
 
-    	    // 🔥 Dynamic message based on status
+    	    //  Dynamic message based on status
     	    if(status.equalsIgnoreCase("SELECTED"))
     	    {
     	        text = "Dear " + student.getName() + ",\n\n" +

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.klef.fsad.sdp.placementsystem.dto.ApplicationDTO;
 import com.klef.fsad.sdp.placementsystem.entity.Application;
@@ -33,16 +34,44 @@ public class StudentController
     	return "Student Dashboard";
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody Student student)
+//    @PostMapping("/register")
+//    public ResponseEntity<String> register(@RequestBody Student student)
+//    {
+//    	try {
+//    		String msg= studentService.studentRegistration(student);
+//    		return ResponseEntity.status(200).body(msg);
+//    	}
+//    	catch(Exception e) {
+//    		return ResponseEntity.status(500).body("Internal Server Error");
+//    	}
+//    }
+    
+    @PostMapping(value = "/register", consumes = "multipart/form-data")
+    public ResponseEntity<String> register(
+            @RequestParam String name,
+            @RequestParam String email,
+            @RequestParam String password,
+            @RequestParam String branch,
+            @RequestParam float cgpa,
+            @RequestParam int year,
+            @RequestParam String username,
+            @RequestParam String collegeName,
+            @RequestParam String contact,
+            @RequestParam MultipartFile file)   // 🔥 resume
     {
-    	try {
-    		String msg= studentService.studentRegistration(student);
-    		return ResponseEntity.status(200).body(msg);
-    	}
-    	catch(Exception e) {
-    		return ResponseEntity.status(500).body("Internal Server Error");
-    	}
+        try 
+        {
+            String msg = studentService.studentRegistration(
+                    name, email, password, branch, cgpa, year,
+                    username, collegeName, contact, file);
+
+            return ResponseEntity.status(200).body(msg);
+        } 
+        catch(Exception e) 
+        {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Internal Server Error");
+        }
     }
 
 //    @PostMapping("/login")
@@ -65,15 +94,42 @@ public class StudentController
 //    }
     
 
-    @PutMapping("/updateprofile")
-    public ResponseEntity<String> update(@RequestBody Student student)
+//    @PutMapping("/updateprofile")
+//    public ResponseEntity<String> update(@RequestBody Student student)
+//    {
+//    	try {
+//        	String msg = studentService.updateStudentProfile(student);
+//            return ResponseEntity.status(201).body(msg);
+//    	}
+//        catch(Exception e) {
+//        	return ResponseEntity.status(500).body("Internal Server Error");
+//        }
+//    }
+    
+    @PutMapping(value = "/update", consumes = "multipart/form-data")
+    public ResponseEntity<String> update(
+            @RequestParam int id,
+            @RequestParam String name,
+            @RequestParam String email,
+            @RequestParam String branch,
+            @RequestParam float cgpa,
+            @RequestParam int year,
+            @RequestParam String username,
+            @RequestParam String collegeName,
+            @RequestParam String contact,
+            @RequestParam(required = false) MultipartFile file)
     {
-    	try {
-        	String msg = studentService.updateStudentProfile(student);
-            return ResponseEntity.status(201).body(msg);
-    	}
-        catch(Exception e) {
-        	return ResponseEntity.status(500).body("Internal Server Error");
+        try 
+        {
+            String msg = studentService.updateStudentProfile(
+                    id, name, email, branch, cgpa, year,
+                    username, collegeName, contact, file);
+
+            return ResponseEntity.status(200).body(msg);
+        }
+        catch(Exception e) 
+        {
+            return ResponseEntity.status(500).body("Internal Server Error");
         }
     }
 
