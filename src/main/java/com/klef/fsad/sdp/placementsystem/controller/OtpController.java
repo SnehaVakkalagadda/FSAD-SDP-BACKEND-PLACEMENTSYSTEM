@@ -8,6 +8,7 @@ import com.klef.fsad.sdp.placementsystem.service.OtpService;
 
 @RestController
 @RequestMapping("/otp")
+@CrossOrigin(origins = "*")
 public class OtpController 
 {
     @Autowired

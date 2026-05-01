@@ -18,9 +18,11 @@ import com.klef.fsad.sdp.placementsystem.entity.Employer;
 import com.klef.fsad.sdp.placementsystem.entity.PlacementOfficer;
 import com.klef.fsad.sdp.placementsystem.entity.Student;
 import com.klef.fsad.sdp.placementsystem.service.AdminService;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 @RestController
 @RequestMapping("admin")
+@CrossOrigin(origins = "*")
 public class AdminController {
 	@Autowired
     private AdminService adminService;

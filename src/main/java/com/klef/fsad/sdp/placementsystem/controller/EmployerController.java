@@ -14,6 +14,7 @@ import com.klef.fsad.sdp.placementsystem.service.EmployerService;
 
 @RestController
 @RequestMapping("employer")
+@CrossOrigin(origins = "*")
 public class EmployerController {
 
     @Autowired

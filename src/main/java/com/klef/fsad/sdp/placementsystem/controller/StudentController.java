@@ -15,6 +15,7 @@ import com.klef.fsad.sdp.placementsystem.service.StudentService;
 
 @RestController
 @RequestMapping("student")
+@CrossOrigin(origins = "*")
 public class StudentController {
 
     @Autowired
