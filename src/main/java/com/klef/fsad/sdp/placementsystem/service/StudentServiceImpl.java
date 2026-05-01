@@ -1,11 +1,13 @@
 package com.klef.fsad.sdp.placementsystem.service;
 
+import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.klef.fsad.sdp.placementsystem.dto.ApplicationDTO;
 import com.klef.fsad.sdp.placementsystem.entity.Application;
@@ -17,117 +19,170 @@ import com.klef.fsad.sdp.placementsystem.repository.StudentRepository;
 
 @Service
 public class StudentServiceImpl implements StudentService {
-	@Autowired
+
+    @Autowired
     private StudentRepository studentRepository;
+
     @Autowired
     private JobRepository jobRepository;
+
     @Autowired
     private ApplicationRepository applicationRepository;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
-    
-    public Student verifyStudentLogin(String email, String pwd) 
-    {
+
+    @Override
+    public Student verifyStudentLogin(String email, String pwd) {
         return studentRepository.findByEmailAndPassword(email, pwd);
     }
-    
-    public String studentRegistration(Student student) 
-    {
-    	String encodedPassword = passwordEncoder.encode(student.getPassword());
-        student.setPassword(encodedPassword);
 
-        studentRepository.save(student);
-        return "Student Registered Successfully";
-    }
-    
-//    @Override
-//    public String verifyStudentLogin(String email, String pwd) 
-//    {
-//        Student s = studentRepository.findByEmailAndPassword(email, pwd);
-//
-//        if(s != null)
-//        {
-//            otpService.generateOtp(email); // send OTP
-//            return "OTP Sent to Email";
-//        }
-//        else
-//        {
-//            return "Invalid Credentials";
-//        }
-//    }
-//    
-//    public String verifyStudentOtp(String email, String otp)
-//    {
-//        boolean valid = otpService.verifyOtp(email, otp);
-//
-//        if(valid)
-//        {
-//            return "Login Successful";
-//        }
-//        else
-//        {
-//            return "Invalid OTP";
-//        }
-//    }
-    
-    public String updateStudentProfile(Student student) 
-    {
-        Optional<Student> optional = studentRepository.findById(student.getId());
-        if(optional.isPresent())
-        {
-            Student s = optional.get();
-            s.setName(student.getName());
-            s.setEmail(student.getEmail());
-            //s.setPassword(student.getPassword());
-            s.setBranch(student.getBranch());
-            //s.setResume(student.getResume());
-            s.setUsername(student.getUsername());
-            s.setCgpa(student.getCgpa());
-            s.setYear(student.getYear());
-            s.setCollegeName(student.getCollegeName());
-            s.setContact(student.getContact());
-            
-            if (student.getPassword() != null && !student.getPassword().isEmpty()) 
-            {
-                s.setPassword(passwordEncoder.encode(student.getPassword()));
+    @Override
+    public String studentRegistration(
+            String name,
+            String email,
+            String password,
+            String branch,
+            float cgpa,
+            int year,
+            String username,
+            String collegeName,
+            String contact,
+            MultipartFile file) {
+
+        try {
+            if (file == null || file.isEmpty()) {
+                return "Resume is required";
             }
-            studentRepository.save(s);
-            return "Student Profile Updated Successfully";
-        }
-        else
-        {
-            return "Student ID Not Found";
+
+            if (!"application/pdf".equals(file.getContentType())) {
+                return "Only PDF files allowed";
+            }
+
+            if (file.getSize() > 2 * 1024 * 1024) {
+                return "File size must be less than 2MB";
+            }
+
+            String folder = System.getProperty("user.dir") + File.separator + "uploads" + File.separator;
+            File dir = new File(folder);
+
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+            File dest = new File(folder + fileName);
+            file.transferTo(dest);
+
+            Student student = new Student();
+            student.setName(name);
+            student.setEmail(email);
+            student.setPassword(passwordEncoder.encode(password));
+            student.setBranch(branch);
+            student.setCgpa(cgpa);
+            student.setYear(year);
+            student.setUsername(username);
+            student.setCollegeName(collegeName);
+            student.setContact(contact);
+            student.setResume("uploads/" + fileName);
+
+            studentRepository.save(student);
+
+            return "Student Registered Successfully";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error in Registration";
         }
     }
-    
-    public List<Job> viewJobs() 
-    {
+
+    @Override
+    public String updateStudentProfile(
+            int id,
+            String name,
+            String email,
+            String branch,
+            float cgpa,
+            int year,
+            String username,
+            String collegeName,
+            String contact,
+            MultipartFile file) {
+
+        try {
+            Optional<Student> optional = studentRepository.findById(id);
+
+            if (optional.isEmpty()) {
+                return "Student Not Found";
+            }
+
+            Student student = optional.get();
+
+            student.setName(name);
+            student.setEmail(email);
+            student.setBranch(branch);
+            student.setCgpa(cgpa);
+            student.setYear(year);
+            student.setUsername(username);
+            student.setCollegeName(collegeName);
+            student.setContact(contact);
+
+            if (file != null && !file.isEmpty()) {
+                if (!"application/pdf".equals(file.getContentType())) {
+                    return "Only PDF allowed";
+                }
+
+                if (file.getSize() > 2 * 1024 * 1024) {
+                    return "File size must be less than 2MB";
+                }
+
+                String folder = System.getProperty("user.dir") + File.separator + "uploads" + File.separator;
+                File dir = new File(folder);
+
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+
+                String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+                File dest = new File(folder + fileName);
+                file.transferTo(dest);
+
+                student.setResume("uploads/" + fileName);
+            }
+
+            studentRepository.save(student);
+
+            return "Profile Updated Successfully";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error updating profile";
+        }
+    }
+
+    @Override
+    public List<Job> viewJobs() {
         return jobRepository.findAll();
     }
-    
-    public String applyJob(ApplicationDTO dto) 
-    {
-    	Optional<Job> optional = jobRepository.findById(dto.getJobId());
-        if(optional.isPresent())
-        {
-        	Application app = new Application();
 
-            app.setStudentId(dto.getStudentId());
-            app.setJobId(dto.getJobId());
-            app.setStatus("APPLIED");
+    @Override
+    public String applyJob(ApplicationDTO dto) {
+        Optional<Job> optional = jobRepository.findById(dto.getJobId());
 
-            applicationRepository.save(app);
-
-            return "Applied Successfully";
-        }
-        else
-        {
+        if (optional.isEmpty()) {
             return "Job ID Not Found";
         }
+
+        Application app = new Application();
+        app.setStudentId(dto.getStudentId());
+        app.setJobId(dto.getJobId());
+        app.setStatus("APPLIED");
+
+        applicationRepository.save(app);
+
+        return "Applied Successfully";
     }
-    
-    public List<Application> trackApplications(int studentId) 
-    {
+
+    @Override
+    public List<Application> trackApplications(int studentId) {
         return applicationRepository.findByStudentId(studentId);
     }
 }
