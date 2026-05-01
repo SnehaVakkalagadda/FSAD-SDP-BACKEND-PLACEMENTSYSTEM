@@ -45,15 +45,16 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                 .requestMatchers(
-                    "/swagger-ui/**",
-                    "/v3/api-docs/**",
-                    "/swagger-ui.html",
-                    "/auth/**",
-                    "/user/**",
-                    "/student/register/**",
-                    "/employer/register/**",
-                    "/student/download-resume/**"
-                ).permitAll()
+                	    "/swagger-ui/**",
+                	    "/v3/api-docs/**",
+                	    "/swagger-ui.html",
+                	    "/auth/**",
+                	    "/user/**",
+                	    "/otp/**",
+                	    "/student/register/**",
+                	    "/employer/register/**",
+                	    "/student/download-resume/**"
+                	).permitAll()
 
                 .requestMatchers("/admin/**").hasAuthority("ADMIN")
                 .requestMatchers("/student/update/**", "/student/viewjobs/**", "/student/applyjob/**", "/student/viewapplications/**").hasAuthority("STUDENT")
